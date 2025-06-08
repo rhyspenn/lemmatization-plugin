@@ -6,6 +6,10 @@ on:
       - 'v*.*.*'  # 当推送版本标签时触发，如 v1.0.0
   workflow_dispatch:  # 允许手动触发
 
+permissions:
+  contents: write
+  actions: read
+
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
@@ -77,12 +81,9 @@ jobs:
         
     - name: 创建 Release
       id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ github.ref_name }}
-        release_name: ${{ steps.extract_info.outputs.plugin_name }} v${{ steps.extract_info.outputs.plugin_version }}
+        name: ${{ steps.extract_info.outputs.plugin_name }} v${{ steps.extract_info.outputs.plugin_version }}
         body: |
           ## 🎉 ${{ steps.extract_info.outputs.plugin_name }} v${{ steps.extract_info.outputs.plugin_version }}
           
@@ -98,19 +99,11 @@ jobs:
           
           ### 📝 更新说明
           请查看提交记录了解本版本的具体更新内容。
+        files: |
+          ${{ steps.extract_info.outputs.output_name }}.bobplugin
         draft: false
         prerelease: false
         
-    - name: 上传插件文件
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./${{ steps.extract_info.outputs.output_name }}.bobplugin
-        asset_name: ${{ steps.extract_info.outputs.output_name }}.bobplugin
-        asset_content_type: application/zip
-    
     - name: 计算文件哈希
       id: calc_hash
       run: |
