@@ -1,0 +1,30 @@
+{
+    "name": "lemmatization-plugin",
+    "version": "0.2.0",
+    "description": "查询英文单词的各种词形变化，包括复数、过去式、现在分词等形式的 Bob 插件",
+    "keywords": [
+        "bob-plugin",
+        "lemmatization",
+        "english",
+        "translation",
+        "morphology",
+        "inflection"
+    ],
+    "author": "Rhys",
+    "license": "MIT",
+    "homepage": "https://github.com/rhyspenn/lemmatization-plugin",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/rhyspenn/lemmatization-plugin.git"
+    },
+    "bugs": {
+        "url": "https://github.com/rhyspenn/lemmatization-plugin/issues"
+    },
+    "engines": {
+        "bob": ">=0.5.0"
+    },
+    "scripts": {
+        "build": "./build.sh",
+        "release": "./release.sh"
+    }
+}

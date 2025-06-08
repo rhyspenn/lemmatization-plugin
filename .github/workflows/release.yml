@@ -1,0 +1,134 @@
+name: lemmatization-plugin 自动发布
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # 当推送版本标签时触发，如 v1.0.0
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 检出代码
+      uses: actions/checkout@v4
+      
+    - name: 提取版本信息
+      id: extract_info
+      run: |
+        # 从 info.json 提取插件信息
+        PLUGIN_NAME=$(grep -o '"name"[[:space:]]*:[[:space:]]*"[^"]*"' src/info.json | cut -d'"' -f4)
+        PLUGIN_VERSION=$(grep -o '"version"[[:space:]]*:[[:space:]]*"[^"]*"' src/info.json | cut -d'"' -f4)
+        PLUGIN_IDENTIFIER=$(grep -o '"identifier"[[:space:]]*:[[:space:]]*"[^"]*"' src/info.json | cut -d'"' -f4)
+        
+        echo "plugin_name=$PLUGIN_NAME" >> $GITHUB_OUTPUT
+        echo "plugin_version=$PLUGIN_VERSION" >> $GITHUB_OUTPUT
+        echo "plugin_identifier=$PLUGIN_IDENTIFIER" >> $GITHUB_OUTPUT
+        
+        # 创建输出文件名
+        OUTPUT_NAME="${PLUGIN_IDENTIFIER}-${PLUGIN_VERSION}"
+        echo "output_name=$OUTPUT_NAME" >> $GITHUB_OUTPUT
+        
+        echo "📦 插件名称: $PLUGIN_NAME"
+        echo "🔖 插件版本: $PLUGIN_VERSION"
+        echo "🆔 插件标识: $PLUGIN_IDENTIFIER"
+        
+    - name: 检查必需文件
+      run: |
+        echo "🔍 检查必需文件..."
+        required_files=("info.json" "main.js")
+        for file in "${required_files[@]}"; do
+          if [ ! -f "src/$file" ]; then
+            echo "❌ 错误: 缺少必需文件 $file"
+            exit 1
+          fi
+        done
+        echo "✅ 所有必需文件都存在"
+        
+    - name: 清理临时文件
+      run: |
+        echo "🧹 清理临时文件..."
+        find src -name ".DS_Store" -delete 2>/dev/null || true
+        find src -name "*.tmp" -delete 2>/dev/null || true
+        find src -name "Thumbs.db" -delete 2>/dev/null || true
+        
+    - name: 打包插件
+      run: |
+        cd src
+        echo "📋 将要打包的文件:"
+        ls -la
+        
+        # 创建 zip 文件
+        zip -r "../${{ steps.extract_info.outputs.output_name }}.zip" . -x "*.DS_Store" "*.tmp" "Thumbs.db"
+        
+        # 将 .zip 改名为 .bobplugin
+        cd ..
+        mv "${{ steps.extract_info.outputs.output_name }}.zip" "${{ steps.extract_info.outputs.output_name }}.bobplugin"
+        
+        echo "✅ 打包完成!"
+        echo "📍 输出文件: ${{ steps.extract_info.outputs.output_name }}.bobplugin"
+        echo "📊 文件大小: $(du -h "${{ steps.extract_info.outputs.output_name }}.bobplugin" | cut -f1)"
+        
+    - name: 验证打包内容
+      run: |
+        echo "🔍 验证打包内容..."
+        unzip -l "${{ steps.extract_info.outputs.output_name }}.bobplugin"
+        
+    - name: 创建 Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref_name }}
+        release_name: ${{ steps.extract_info.outputs.plugin_name }} v${{ steps.extract_info.outputs.plugin_version }}
+        body: |
+          ## 🎉 ${{ steps.extract_info.outputs.plugin_name }} v${{ steps.extract_info.outputs.plugin_version }}
+          
+          ### 📦 安装方法
+          1. 下载 `${{ steps.extract_info.outputs.output_name }}.bobplugin` 文件
+          2. 双击文件安装到 Bob
+          
+          ### 🔧 插件信息
+          - **插件名称**: ${{ steps.extract_info.outputs.plugin_name }}
+          - **插件版本**: ${{ steps.extract_info.outputs.plugin_version }}
+          - **插件标识**: ${{ steps.extract_info.outputs.plugin_identifier }}
+          - **最低 Bob 版本**: 0.5.0
+          
+          ### 📝 更新说明
+          请查看提交记录了解本版本的具体更新内容。
+        draft: false
+        prerelease: false
+        
+    - name: 上传插件文件
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./${{ steps.extract_info.outputs.output_name }}.bobplugin
+        asset_name: ${{ steps.extract_info.outputs.output_name }}.bobplugin
+        asset_content_type: application/zip
+    
+    - name: 计算文件哈希
+      id: calc_hash
+      run: |
+        FILE_HASH=$(shasum -a 256 "${{ steps.extract_info.outputs.output_name }}.bobplugin" | cut -d' ' -f1)
+        echo "file_hash=$FILE_HASH" >> $GITHUB_OUTPUT
+        echo "📝 文件哈希: $FILE_HASH"
+    
+    - name: 更新 appcast.json
+      run: |
+        echo "⚠️ 请手动更新 appcast.json 中的 SHA256 哈希值:"
+        echo "文件: ${{ steps.extract_info.outputs.output_name }}.bobplugin"
+        echo "SHA256: ${{ steps.calc_hash.outputs.file_hash }}"
+        echo "URL: https://github.com/${{ github.repository }}/releases/download/${{ github.ref_name }}/${{ steps.extract_info.outputs.output_name }}.bobplugin"
+        
+    - name: 完成提示
+      run: |
+        echo "🎉 lemmatization-plugin 打包和发布成功!"
+        echo "💡 提示:"
+        echo "   - 插件已上传到 GitHub Release"
+        echo "   - 用户可以从 Release 页面下载 .bobplugin 文件"
+        echo "   - 双击 .bobplugin 文件即可安装到 Bob"

@@ -1,0 +1,13 @@
+{
+    "identifier": "lemmatization-plugin",
+    "version": "0.2.0",
+    "category": "translate",
+    "name": "英文词形变化查询",
+    "summary": "查询英文单词的各种词形变化，包括复数、过去式、现在分词等形式",
+    "icon": "",
+    "author": "Rhys",
+    "homepage": "https://github.com/rhyspenn/lemmatization-plugin",
+    "appcast": "https://raw.githubusercontent.com/rhyspenn/lemmatization-plugin/main/appcast.json",
+    "minBobVersion": "0.5.0",
+    "options": []
+}

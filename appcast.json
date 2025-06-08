@@ -1,0 +1,12 @@
+{
+    "identifier": "lemmatization-plugin",
+    "versions": [
+        {
+            "version": "0.2.0",
+            "desc": "✨ 新增英文词形变化查询功能\n📚 支持复数、过去式、现在分词等多种形式\n⚡ 基于本地词典，响应快速\n🛡️ 完善的错误处理机制",
+            "sha256": "",
+            "url": "https://github.com/rhyspenn/lemmatization-plugin/releases/download/v0.2.0/lemmatization-plugin-0.2.0.bobplugin",
+            "minBobVersion": "0.5.0"
+        }
+    ]
+}
