@@ -2,10 +2,12 @@
 
 ## 英文词形变化查询 Bob 插件
 
-[![GitHub release](https://img.shields.io/github/v/release/rhyspenn/lemmatization-plugin)](https://github.com/rhyspenn/lemmatization-plugin/releases)
-[![GitHub downloads](https://img.shields.io/github/downloads/rhyspenn/lemmatization-plugin/total)](https://github.com/rhyspenn/lemmatization-plugin/releases)
-[![License](https://img.shields.io/github/license/rhyspenn/lemmatization-plugin)](https://github.com/rhyspenn/lemmatization-plugin/blob/main/LICENSE)
-[![Bob Plugin](https://img.shields.io/badge/Bob-Plugin-orange)](https://bobtranslate.com/)
+[![GitHub release](https://img.shields.io/github/v/release/rhyspenn/lemmatization-plugin?color=blue&style=flat-square)](https://github.com/rhyspenn/lemmatization-plugin/releases)
+[![GitHub downloads](https://img.shields.io/github/downloads/rhyspenn/lemmatization-plugin/total?color=green&style=flat-square)](https://github.com/rhyspenn/lemmatization-plugin/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://github.com/rhyspenn/lemmatization-plugin/blob/main/LICENSE)
+[![Bob Plugin](https://img.shields.io/badge/Bob-Plugin-orange.svg?style=flat-square)](https://bobtranslate.com/)
+[![Version](https://img.shields.io/badge/version-0.2.0-brightgreen.svg?style=flat-square)](https://github.com/rhyspenn/lemmatization-plugin)
+[![Language](https://img.shields.io/badge/language-JavaScript-yellow.svg?style=flat-square)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 
 > 🔍 `lemmatization-plugin` - 查询英文单词的各种词形变化，包括复数、过去式、现在分词等形式的专业 Bob 插件
 
